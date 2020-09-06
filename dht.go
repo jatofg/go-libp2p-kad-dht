@@ -300,7 +300,7 @@ func makeRoutingTable(dht *IpfsDHT, cfg config) (*kb.RoutingTable, error) {
 
 	self := kb.ConvertPeerID(dht.host.ID())
 
-	rt, err := kb.NewRoutingTable(cfg.bucketSize, self, time.Minute, dht.host.Peerstore(), maxLastSuccessfulOutboundThreshold)
+	rt, err := kb.NewRoutingTable(cfg.bucketSize, self, time.Minute, dht.host.Peerstore(), maxLastSuccessfulOutboundThreshold, nil)
 	dht.successfulOutboundQueryGracePeriod = maxLastSuccessfulOutboundThreshold
 	cmgr := dht.host.ConnManager()
 
@@ -480,7 +480,7 @@ func (dht *IpfsDHT) peerFound(ctx context.Context, p peer.ID, queryPeer bool) {
 	if err != nil {
 		logger.Errorw("failed to validate if peer is a DHT peer", "peer", p, "error", err)
 	} else if b {
-		newlyAdded, err := dht.routingTable.TryAddPeer(p, queryPeer)
+		newlyAdded, err := dht.routingTable.TryAddPeer(p, queryPeer, false)
 		if err != nil {
 			// peer not added.
 			return
